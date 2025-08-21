@@ -1,0 +1,447 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { 
+  BookOpen, 
+  TrendingUp, 
+  Users, 
+  Calendar,
+  Plus,
+  Edit,
+  RefreshCw,
+  Sparkles,
+  Clock,
+  Heart
+} from 'lucide-react';
+import api from '../services/api';
+import { toast } from 'react-toastify';
+
+const Dashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [recentEntries, setRecentEntries] = useState([]);
+  const [todayEntry, setTodayEntry] = useState(null);
+  const [apiError, setApiError] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    content: '',
+    mood: 3,
+    moodEmoji: '😐'
+  });
+
+  const moodOptions = [
+    { value: 1, emoji: '😢', label: 'Very Sad', color: 'bg-red-500' },
+    { value: 2, emoji: '😕', label: 'Sad', color: 'bg-orange-500' },
+    { value: 3, emoji: '😐', label: 'Neutral', color: 'bg-yellow-500' },
+    { value: 4, emoji: '🙂', label: 'Happy', color: 'bg-blue-500' },
+    { value: 5, emoji: '😊', label: 'Very Happy', color: 'bg-green-500' }
+  ];
+
+  useEffect(() => {
+    loadDashboardData();
+    
+    // Add a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.log('Loading timeout reached, setting loading to false');
+        setLoading(false);
+        setApiError(true);
+      }
+    }, 10000); // 10 second timeout
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setApiError(false);
+      
+      const today = new Date().toISOString().split('T')[0];
+      
+      const [recentResponse, todayResponse] = await Promise.all([
+        api.get('/journal/recent?limit=5'),
+        api.get(`/journal/entry/${today}`)
+      ]);
+
+      setRecentEntries(recentResponse.data.entries || []);
+      
+      if (todayResponse.data.entry) {
+        setTodayEntry(todayResponse.data.entry);
+        setFormData({
+          content: todayResponse.data.entry.content,
+          mood: todayResponse.data.entry.mood,
+          moodEmoji: todayResponse.data.entry.moodEmoji || moodOptions[todayResponse.data.entry.mood - 1].emoji
+        });
+      } else {
+        setFormData({
+          content: '',
+          mood: 3,
+          moodEmoji: '😐'
+        });
+      }
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+      setApiError(true);
+      
+      // Set default state even if API fails
+      setRecentEntries([]);
+      setTodayEntry(null);
+      setFormData({
+        content: '',
+        mood: 3,
+        moodEmoji: '😐'
+      });
+      
+      if (error.response?.status === 401) {
+        toast.error('Please log in again');
+        navigate('/login');
+      } else if (error.response?.status !== 404) {
+        toast.error('Failed to load dashboard data. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMoodChange = (mood) => {
+    const moodOption = moodOptions.find(option => option.value === mood);
+    setFormData({
+      ...formData,
+      mood,
+      moodEmoji: moodOption.emoji
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.content.trim()) {
+      toast.error('Please write something in your journal entry');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const response = await api.post('/journal/entry', {
+        content: formData.content,
+        mood: formData.mood,
+        moodEmoji: formData.moodEmoji
+      });
+
+      setTodayEntry(response.data.entry);
+      toast.success(response.data.message);
+      
+      // Reload recent entries
+      const recentResponse = await api.get('/journal/recent?limit=5');
+      setRecentEntries(recentResponse.data.entries || []);
+    } catch (error) {
+      console.error('Error saving journal entry:', error);
+      toast.error('Failed to save journal entry. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return 'Yesterday';
+    } else {
+      return date.toLocaleDateString();
+    }
+  };
+
+  const getMoodEmoji = (mood) => {
+    return moodOptions.find(option => option.value === mood)?.emoji || '😐';
+  };
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Enhanced Welcome Header */}
+      <div className="mb-8">
+        <div className="flex items-center space-x-3 mb-4">
+          <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
+            <Heart className="h-8 w-8 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-1">
+              {getGreeting()}, {user?.displayName || user?.username}! 👋
+            </h1>
+            <p className="text-base lg:text-lg text-gray-600">
+              How are you feeling today? Take a moment to reflect and journal your thoughts.
+            </p>
+          </div>
+        </div>
+        
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <BookOpen className="h-5 w-5 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Total Entries</p>
+                <p className="text-2xl font-bold text-gray-900">{recentEntries.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-green-100 rounded-lg">
+                <Clock className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Last Entry</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {recentEntries.length > 0 ? formatDate(recentEntries[0].date) : 'None'}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 sm:col-span-2 lg:col-span-1">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-purple-100 rounded-lg">
+                <Sparkles className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">Current Streak</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {recentEntries.length > 0 ? 'Active' : 'Start Today'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {apiError && (
+        <div className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-red-800">
+                Connection Error
+              </p>
+              <p className="text-sm text-red-700 mt-1">
+                Unable to load dashboard data. Please check your connection and try again.
+              </p>
+            </div>
+            <div className="ml-auto pl-3">
+              <button
+                onClick={loadDashboardData}
+                className="bg-red-100 text-red-800 px-3 py-1 rounded-lg text-sm hover:bg-red-200 transition-colors"
+              >
+                <RefreshCw className="h-4 w-4 inline mr-1" />
+                Retry
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+        {/* Main Content - Journal Entry */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 lg:p-8">
+            <div className="flex items-center justify-between mb-6 lg:mb-8">
+              <div>
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2">
+                  {todayEntry ? 'Edit Today\'s Entry' : 'Today\'s Journal Entry'}
+                </h2>
+                <p className="text-gray-600">
+                  {todayEntry ? 'Update your thoughts and feelings' : 'Start your daily reflection'}
+                </p>
+              </div>
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-6 lg:space-y-8">
+              {/* Mood Selection */}
+              <div>
+                <label className="block text-base lg:text-lg font-semibold text-gray-900 mb-4">
+                  How are you feeling today?
+                </label>
+                <div className="grid grid-cols-5 gap-3 lg:gap-4">
+                  {moodOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleMoodChange(option.value)}
+                      className={`flex flex-col items-center p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 ${
+                        formData.mood === option.value
+                          ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg shadow-blue-500/20'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="text-3xl lg:text-4xl mb-2 lg:mb-3">{option.emoji}</span>
+                      <span className="text-xs lg:text-sm text-gray-700 text-center font-medium">{option.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Journal Content */}
+              <div>
+                <label htmlFor="content" className="block text-base lg:text-lg font-semibold text-gray-900 mb-4">
+                  What's on your mind?
+                </label>
+                <textarea
+                  id="content"
+                  value={formData.content}
+                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                  rows={8}
+                  className="block w-full border border-gray-300 rounded-xl px-4 lg:px-6 py-3 lg:py-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-gray-900 text-base lg:text-lg leading-relaxed"
+                  placeholder="Write about your day, your thoughts, feelings, or anything you'd like to reflect on..."
+                  maxLength={5000}
+                />
+                <div className="text-sm text-gray-500 mt-3 text-right">
+                  {formData.content.length}/5000 characters
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={saving || !formData.content.trim()}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 lg:py-4 px-6 rounded-xl hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold text-base lg:text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+              >
+                {saving ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 lg:h-6 lg:w-6 border-b-2 border-white mr-2 lg:mr-3"></div>
+                    Saving...
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    {todayEntry ? <Edit className="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" /> : <Plus className="h-5 w-5 lg:h-6 lg:w-6 mr-2 lg:mr-3" />}
+                    {todayEntry ? 'Update Entry' : 'Save Entry'}
+                  </div>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+            <div className="space-y-4">
+              <button
+                onClick={() => navigate('/journal')}
+                className="w-full flex items-center p-4 text-left rounded-xl border border-gray-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 hover:border-blue-300 transition-all duration-200 group transform hover:scale-[1.02]"
+              >
+                <div className="p-2 lg:p-3 bg-blue-100 rounded-xl group-hover:bg-blue-200 transition-colors">
+                  <BookOpen className="h-5 w-5 lg:h-6 lg:w-6 text-blue-600" />
+                </div>
+                <div className="ml-3 lg:ml-4">
+                  <div className="font-semibold text-gray-900">View All Entries</div>
+                  <div className="text-sm text-gray-500">Browse your journal history</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => navigate('/mood-trends')}
+                className="w-full flex items-center p-4 text-left rounded-xl border border-gray-200 hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 hover:border-green-300 transition-all duration-200 group transform hover:scale-[1.02]"
+              >
+                <div className="p-2 lg:p-3 bg-green-100 rounded-xl group-hover:bg-green-200 transition-colors">
+                  <TrendingUp className="h-5 w-5 lg:h-6 lg:w-6 text-green-600" />
+                </div>
+                <div className="ml-3 lg:ml-4">
+                  <div className="font-semibold text-gray-900">Mood Trends</div>
+                  <div className="text-sm text-gray-500">See your mood patterns</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => navigate('/stories')}
+                className="w-full flex items-center p-4 text-left rounded-xl border border-gray-200 hover:bg-gradient-to-r hover:from-purple-50 hover:to-violet-50 hover:border-purple-300 transition-all duration-200 group transform hover:scale-[1.02]"
+              >
+                <div className="p-2 lg:p-3 bg-purple-100 rounded-xl group-hover:bg-purple-200 transition-colors">
+                  <Users className="h-5 w-5 lg:h-6 lg:w-6 text-purple-600" />
+                </div>
+                <div className="ml-3 lg:ml-4">
+                  <div className="font-semibold text-gray-900">Community</div>
+                  <div className="text-sm text-gray-500">Read and share stories</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Recent Entries */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-6">Recent Entries</h3>
+            {recentEntries.length > 0 ? (
+              <div className="space-y-4">
+                {recentEntries.map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="p-4 rounded-xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 cursor-pointer transition-all duration-200 transform hover:scale-[1.02]"
+                    onClick={() => navigate(`/journal?date=${entry.date.split('T')[0]}`)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-900 line-clamp-2 leading-relaxed font-medium">
+                          {entry.content}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-2 font-medium">
+                          {formatDate(entry.date)}
+                        </p>
+                      </div>
+                      <span className="text-2xl lg:text-3xl ml-3 lg:ml-4 flex-shrink-0">
+                        {getMoodEmoji(entry.mood)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 lg:py-12">
+                <div className="text-5xl lg:text-6xl mb-4">📝</div>
+                <p className="text-gray-500 text-base lg:text-lg font-medium mb-2">No recent entries yet.</p>
+                <p className="text-gray-400 text-sm">Start journaling to see your entries here!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
