@@ -160,32 +160,32 @@ const Journal = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-4">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Journal</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-xl font-bold text-gray-900">Journal</h1>
+            <p className="text-sm text-gray-600 mt-1">
               Reflect on your thoughts and feelings
             </p>
           </div>
-          <Calendar className="h-8 w-8 text-blue-500" />
+          <Calendar className="h-6 w-6 text-blue-500" />
         </div>
       </div>
 
       {/* Date Navigation */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigateDate(-1)}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
           
           <div className="text-center">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-base font-semibold text-gray-900">
               {formatDate(currentDate)}
             </h2>
             {isToday(currentDate) && (
@@ -197,7 +197,7 @@ const Journal = () => {
           
           <button
             onClick={() => navigateDate(1)}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
@@ -205,12 +205,12 @@ const Journal = () => {
       </div>
 
       {/* Journal Entry */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4">
         {!isEditing ? (
           // View Mode
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-gray-900">
                 {entry ? 'Journal Entry' : 'No Entry for This Date'}
               </h3>
               <div className="flex space-x-2">
@@ -218,17 +218,17 @@ const Journal = () => {
                   <>
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                      className="flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
                     >
-                      <Edit className="h-4 w-4 mr-1" />
+                      <Edit className="h-3 w-3 mr-1" />
                       Edit
                     </button>
                     <button
                       onClick={handleDelete}
                       disabled={deleting}
-                      className="flex items-center px-3 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 disabled:opacity-50"
+                      className="flex items-center px-2.5 py-1.5 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 disabled:opacity-50"
                     >
-                      <Trash2 className="h-4 w-4 mr-1" />
+                      <Trash2 className="h-3 w-3 mr-1" />
                       {deleting ? 'Deleting...' : 'Delete'}
                     </button>
                   </>
@@ -237,32 +237,32 @@ const Journal = () => {
             </div>
 
             {entry ? (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3">
-                  <span className="text-3xl">{entry.moodEmoji}</span>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2.5">
+                  <span className="text-2xl">{entry.moodEmoji}</span>
                   <div>
-                    <p className="text-sm text-gray-600">Mood</p>
-                    <p className="font-medium text-gray-900">
+                    <p className="text-xs text-gray-600">Mood</p>
+                    <p className="text-sm font-medium text-gray-900">
                       {moodOptions.find(option => option.value === entry.mood)?.label}
                     </p>
                   </div>
                 </div>
                 
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">Entry</p>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-gray-900 whitespace-pre-wrap">{entry.content}</p>
+                  <p className="text-xs text-gray-600 mb-1.5">Entry</p>
+                  <div className="bg-gray-50 rounded-lg p-3">
+                    <p className="text-sm text-gray-900 whitespace-pre-wrap">{entry.content}</p>
                   </div>
                 </div>
 
                 {entry.tags && entry.tags.length > 0 && (
                   <div>
-                    <p className="text-sm text-gray-600 mb-2">Tags</p>
-                    <div className="flex flex-wrap gap-2">
+                    <p className="text-xs text-gray-600 mb-1.5">Tags</p>
+                    <div className="flex flex-wrap gap-1.5">
                       {entry.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+                          className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-0.5 rounded-full"
                         >
                           {tag}
                         </span>
@@ -271,17 +271,17 @@ const Journal = () => {
                   </div>
                 )}
 
-                <div className="text-xs text-gray-500 pt-4 border-t border-gray-200">
+                <div className="text-xs text-gray-500 pt-3 border-t border-gray-200">
                   {entry.isEdited ? 'Last edited: ' : 'Created: '}
                   {new Date(entry.updatedAt).toLocaleString()}
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-gray-500 mb-4">No journal entry for this date.</p>
+              <div className="text-center py-8">
+                <p className="text-sm text-gray-500 mb-3">No journal entry for this date.</p>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 text-sm"
                 >
                   Write an Entry
                 </button>
@@ -291,8 +291,8 @@ const Journal = () => {
         ) : (
           // Edit Mode
           <div>
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-semibold text-gray-900">
                 {entry ? 'Edit Entry' : 'New Entry'}
               </h3>
               <button
@@ -312,31 +312,31 @@ const Journal = () => {
                     });
                   }
                 }}
-                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
+                className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3">
               {/* Mood Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2">
                   How are you feeling today?
                 </label>
-                <div className="flex space-x-2">
+                <div className="flex space-x-1.5">
                   {moodOptions.map((option) => (
                     <button
                       key={option.value}
                       type="button"
                       onClick={() => handleMoodChange(option.value)}
-                      className={`flex flex-col items-center p-3 rounded-lg border-2 transition-colors ${
+                      className={`flex flex-col items-center p-2 rounded-lg border-2 transition-colors ${
                         formData.mood === option.value
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <span className="text-2xl mb-1">{option.emoji}</span>
+                      <span className="text-xl mb-1">{option.emoji}</span>
                       <span className="text-xs text-gray-600">{option.label}</span>
                     </button>
                   ))}
@@ -345,15 +345,15 @@ const Journal = () => {
 
               {/* Journal Content */}
               <div>
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="content" className="block text-xs font-medium text-gray-700 mb-2">
                   What's on your mind?
                 </label>
                 <textarea
                   id="content"
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  rows={8}
-                  className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  rows={6}
+                  className="block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500 resize-none text-sm"
                   placeholder="Write about your day, your thoughts, or anything you'd like to reflect on..."
                   maxLength={5000}
                 />
@@ -362,20 +362,20 @@ const Journal = () => {
                 </div>
               </div>
 
-              <div className="flex space-x-3 pt-4">
+              <div className="flex space-x-3 pt-3">
                 <button
                   type="submit"
                   disabled={saving || !formData.content.trim()}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-blue-600 text-white py-2 px-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
                 >
                   {saving ? (
                     <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-1.5"></div>
                       Saving...
                     </div>
                   ) : (
                     <div className="flex items-center justify-center">
-                      <Save className="h-4 w-4 mr-2" />
+                      <Save className="h-3 w-3 mr-1.5" />
                       Save Entry
                     </div>
                   )}
@@ -390,3 +390,4 @@ const Journal = () => {
 };
 
 export default Journal;
+

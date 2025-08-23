@@ -92,70 +92,70 @@ const Profile = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-6xl mx-auto space-y-4">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6">
+      <div className="bg-white rounded-lg shadow-sm p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
+            <h1 className="text-xl font-bold text-gray-900">Profile</h1>
             <p className="text-gray-600 mt-1">
               Manage your account and view your activity
             </p>
           </div>
-          <User className="h-8 w-8 text-blue-500" />
+          <User className="h-6 w-6 text-blue-500" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Profile Information */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           {/* Basic Info */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900">Account Information</h2>
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-semibold text-gray-900">Account Information</h2>
               {!isEditing && (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+                  className="flex items-center px-2.5 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="h-3 w-3 mr-1" />
                   Edit
                 </button>
               )}
             </div>
 
             {!isEditing ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Username</label>
-                  <p className="mt-1 text-gray-900">{user.username}</p>
+                  <label className="block text-xs font-medium text-gray-700">Username</label>
+                  <p className="mt-1 text-sm text-gray-900">{user.username}</p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Display Name</label>
-                  <p className="mt-1 text-gray-900">{user.displayName || 'Not set'}</p>
+                  <label className="block text-xs font-medium text-gray-700">Display Name</label>
+                  <p className="mt-1 text-sm text-gray-900">{user.displayName || 'Not set'}</p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Member Since</label>
-                  <p className="mt-1 text-gray-900">{formatDate(user.createdAt)}</p>
+                  <label className="block text-xs font-medium text-gray-700">Member Since</label>
+                  <p className="mt-1 text-sm text-gray-900">{formatDate(user.createdAt)}</p>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Last Login</label>
-                  <p className="mt-1 text-gray-900">{formatDate(user.lastLogin)}</p>
+                  <label className="block text-xs font-medium text-gray-700">Last Login</label>
+                  <p className="mt-1 text-sm text-gray-900">{formatDate(user.lastLogin)}</p>
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Username</label>
-                  <p className="mt-1 text-gray-500 text-sm">{user.username}</p>
+                  <label className="block text-xs font-medium text-gray-700">Username</label>
+                  <p className="mt-1 text-xs text-gray-500">{user.username}</p>
                   <p className="text-xs text-gray-400">Username cannot be changed</p>
                 </div>
                 
                 <div>
-                  <label htmlFor="displayName" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="displayName" className="block text-xs font-medium text-gray-700">
                     Display Name
                   </label>
                   <input
@@ -163,19 +163,19 @@ const Profile = () => {
                     id="displayName"
                     value={formData.displayName}
                     onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-2.5 py-1.5 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter your display name"
                     maxLength={30}
                   />
                 </div>
                 
-                <div className="flex space-x-3 pt-4">
+                <div className="flex space-x-2 pt-3">
                   <button
                     type="submit"
                     disabled={loading}
-                    className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                    className="flex items-center px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
                   >
-                    <Save className="h-4 w-4 mr-1" />
+                    <Save className="h-3 w-3 mr-1" />
                     {loading ? 'Saving...' : 'Save Changes'}
                   </button>
                   <button
@@ -184,9 +184,9 @@ const Profile = () => {
                       setIsEditing(false);
                       setFormData({ displayName: user.displayName || '' });
                     }}
-                    className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                    className="flex items-center px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
                   >
-                    <X className="h-4 w-4 mr-1" />
+                    <X className="h-3 w-3 mr-1" />
                     Cancel
                   </button>
                 </div>
@@ -195,31 +195,31 @@ const Profile = () => {
           </div>
 
           {/* Privacy & Security */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Privacy & Security</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Privacy & Security</h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center">
-                  <Shield className="h-5 w-5 text-green-500 mr-3" />
+                  <Shield className="h-4 w-4 text-green-500 mr-2.5" />
                   <div>
-                    <h3 className="font-medium text-gray-900">Anonymous Account</h3>
-                    <p className="text-sm text-gray-600">Your personal information is protected</p>
+                    <h3 className="text-sm font-medium text-gray-900">Anonymous Account</h3>
+                    <p className="text-xs text-gray-600">Your personal information is protected</p>
                   </div>
                 </div>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                   Active
                 </span>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                 <div className="flex items-center">
-                  <Heart className="h-5 w-5 text-blue-500 mr-3" />
+                  <Heart className="h-4 w-4 text-blue-500 mr-2.5" />
                   <div>
-                    <h3 className="font-medium text-gray-900">Journal Privacy</h3>
-                    <p className="text-sm text-gray-600">Your journal entries are private and secure</p>
+                    <h3 className="text-sm font-medium text-gray-900">Journal Privacy</h3>
+                    <p className="text-xs text-gray-600">Your journal entries are private and secure</p>
                   </div>
                 </div>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   Private
                 </span>
               </div>
@@ -228,40 +228,40 @@ const Profile = () => {
         </div>
 
         {/* Statistics */}
-        <div className="space-y-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Activity</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+        <div className="space-y-4">
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Your Activity</h2>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                 <div className="flex items-center">
-                  <BookOpen className="h-5 w-5 text-blue-600 mr-3" />
+                  <BookOpen className="h-4 w-4 text-blue-600 mr-2.5" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Journal Entries</p>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-xs font-medium text-gray-900">Journal Entries</p>
+                    <p className="text-lg font-bold text-blue-600">
                       {stats?.journalEntries || 0}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                 <div className="flex items-center">
-                  <Heart className="h-5 w-5 text-green-600 mr-3" />
+                  <Heart className="h-4 w-4 text-green-600 mr-2.5" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Average Mood</p>
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-xs font-medium text-gray-900">Average Mood</p>
+                    <p className="text-lg font-bold text-green-600">
                       {stats?.averageMood ? getMoodLabel(Math.round(stats.averageMood)) : 'N/A'}
                     </p>
                   </div>
                 </div>
               </div>
               
-              <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
+              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
                 <div className="flex items-center">
-                  <User className="h-5 w-5 text-purple-600 mr-3" />
+                  <User className="h-4 w-4 text-purple-600 mr-2.5" />
                   <div>
-                    <p className="text-sm font-medium text-gray-900">Stories Shared</p>
-                    <p className="text-2xl font-bold text-purple-600">
+                    <p className="text-xs font-medium text-gray-900">Stories Shared</p>
+                    <p className="text-lg font-bold text-purple-600">
                       {stats?.storiesCount || 0}
                     </p>
                   </div>
@@ -271,18 +271,18 @@ const Profile = () => {
           </div>
 
           {/* Account Type */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Type</h2>
-            <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
+          <div className="bg-white rounded-lg shadow-sm p-4">
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Account Type</h2>
+            <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
               <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">
                     {user.displayName?.charAt(0) || user.username.charAt(0)}
                   </span>
                 </div>
-                <div className="ml-4">
-                  <h3 className="font-medium text-gray-900">Anonymous User</h3>
-                  <p className="text-sm text-gray-600">Your privacy is our priority</p>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-gray-900">Anonymous User</h3>
+                  <p className="text-xs text-gray-600">Your privacy is our priority</p>
                 </div>
               </div>
             </div>
@@ -294,3 +294,4 @@ const Profile = () => {
 };
 
 export default Profile;
+

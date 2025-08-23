@@ -123,3 +123,4 @@ export const AnimatedTextarea = ({
     </div>
   );
 };
+
