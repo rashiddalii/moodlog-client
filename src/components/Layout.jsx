@@ -53,7 +53,7 @@ const Layout = () => {
           {/* Sidebar Header */}
           <div className="flex items-center justify-between h-16 px-4 border-b border-gray-100 bg-gradient-to-r from-blue-600 to-indigo-600">
             <div className="flex items-center space-x-2">
-              <div className="p-1.5 bg-white bg-opacity-20 rounded-lg">
+              <div className="p-1.5 bg-opacity-20 rounded-lg">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
               <div>
@@ -71,48 +71,43 @@ const Layout = () => {
 
           {/* Navigation */}
           <nav className="flex-1 px-3 py-4 space-y-1">
-            <div className="mb-4">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
-                Navigation
-              </h2>
-              <div className="space-y-1">
-                {navigation.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.name}
-                      onClick={() => {
-                        navigate(item.href);
-                        setSidebarOpen(false);
-                      }}
-                      className={`group flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                        isActive(item.href)
-                          ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md shadow-blue-500/25'
-                          : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                      }`}
-                    >
-                      <Icon className={`mr-2.5 h-4 w-4 transition-colors ${
+            <div className="space-y-1">
+              {navigation.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.name}
+                    onClick={() => {
+                      navigate(item.href);
+                      setSidebarOpen(false);
+                    }}
+                    className={`group flex items-center w-full px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                      isActive(item.href)
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md shadow-blue-500/25'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    <Icon className={`mr-2.5 h-4 w-4 transition-colors ${
+                      isActive(item.href) 
+                        ? 'text-white' 
+                        : 'text-gray-400 group-hover:text-gray-600'
+                    }`} />
+                    <div className="flex-1 text-left">
+                      <div className="font-medium">{item.name}</div>
+                      <div className={`text-xs mt-0.5 ${
                         isActive(item.href) 
-                          ? 'text-white' 
-                          : 'text-gray-400 group-hover:text-gray-600'
-                      }`} />
-                      <div className="flex-1 text-left">
-                        <div className="font-medium">{item.name}</div>
-                        <div className={`text-xs mt-0.5 ${
-                          isActive(item.href) 
-                            ? 'text-blue-100' 
-                            : 'text-gray-500 group-hover:text-gray-600'
-                        }`}>
-                          {item.description}
-                        </div>
+                          ? 'text-blue-100' 
+                          : 'text-gray-500 group-hover:text-gray-600'
+                      }`}>
+                        {item.description}
                       </div>
-                      {isActive(item.href) && (
-                        <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+                    </div>
+                    {isActive(item.href) && (
+                      <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </nav>
 
