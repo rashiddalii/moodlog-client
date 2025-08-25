@@ -61,32 +61,42 @@ const Dashboard = () => {
       
       const today = new Date().toISOString().split('T')[0];
       
-      const [recentResponse, todayResponse] = await Promise.all([
-        api.get('/journal/recent?limit=5'),
-        api.get(`/journal/entry/${today}`)
-      ]);
-
-      setRecentEntries(recentResponse.data.entries || []);
+      // Load recent entries first
+      try {
+        const recentResponse = await api.get('/journal/recent?limit=5');
+        setRecentEntries(recentResponse.data.entries || []);
+      } catch (recentError) {
+        console.log('Recent entries not available:', recentError);
+        setRecentEntries([]);
+      }
       
-      if (todayResponse.data.entry) {
-        setTodayEntry(todayResponse.data.entry);
-        setFormData({
-          content: todayResponse.data.entry.content,
-          mood: todayResponse.data.entry.mood,
-          moodEmoji: todayResponse.data.entry.moodEmoji || moodOptions[todayResponse.data.entry.mood - 1].emoji
-        });
-      } else {
+      // Load today's entry
+      try {
+        const todayResponse = await api.get(`/journal/entry/${today}`);
+        if (todayResponse.data.entry) {
+          setTodayEntry(todayResponse.data.entry);
+          setFormData({
+            content: todayResponse.data.entry.content,
+            mood: todayResponse.data.entry.mood,
+            moodEmoji: todayResponse.data.entry.moodEmoji || moodOptions[todayResponse.data.entry.mood - 1].emoji
+          });
+        }
+      } catch (todayError) {
+        if (todayError.response?.status !== 404) {
+          console.log('Today entry error:', todayError);
+        }
+        setTodayEntry(null);
         setFormData({
           content: '',
           mood: 3,
           moodEmoji: '😐'
         });
       }
+      
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       setApiError(true);
       
-      // Set default state even if API fails
       setRecentEntries([]);
       setTodayEntry(null);
       setFormData({
@@ -98,8 +108,6 @@ const Dashboard = () => {
       if (error.response?.status === 401) {
         toast.error('Please log in again');
         navigate('/login');
-      } else if (error.response?.status !== 404) {
-        toast.error('Failed to load dashboard data. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -243,34 +251,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {apiError && (
-        <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <svg className="h-4 w-4 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-2.5">
-              <p className="text-sm font-medium text-red-800">
-                Connection Error
-              </p>
-              <p className="text-xs text-red-700 mt-0.5">
-                Unable to load dashboard data. Please check your connection and try again.
-              </p>
-            </div>
-            <div className="ml-auto pl-2.5">
-              <button
-                onClick={loadDashboardData}
-                className="bg-red-100 text-red-800 px-2.5 py-1 rounded-lg text-xs hover:bg-red-200 transition-colors"
-              >
-                <RefreshCw className="h-3 w-3 inline mr-1" />
-                Retry
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">

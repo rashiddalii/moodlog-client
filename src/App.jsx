@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Journal from './pages/Journal';
 import MoodTrends from './pages/MoodTrends';
 import Stories from './pages/Stories';
+import NewStory from './pages/NewStory';
 import StoryDetail from './pages/StoryDetail';
 import Profile from './pages/Profile';
 import Layout from './components/Layout';
@@ -58,6 +59,7 @@ function App() {
               <Route path="journal" element={<Journal />} />
               <Route path="mood-trends" element={<MoodTrends />} />
               <Route path="stories" element={<Stories />} />
+              <Route path="stories/new" element={<NewStory />} />
               <Route path="stories/:id" element={<StoryDetail />} />
               <Route path="profile" element={<Profile />} />
             </Route>

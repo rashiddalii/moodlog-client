@@ -234,7 +234,7 @@ const MoodTrends = () => {
             </div>
             <div className="ml-3">
               <p className="text-xs font-medium text-gray-600">Most Common</p>
-              <p className="text-lg font-bold text-gray-900">
+              <p className="text-lg font-bold text-gray-900 ">
                 {moodLabels[trendsData.statistics.mostFrequentMood]}
               </p>
             </div>
@@ -248,7 +248,7 @@ const MoodTrends = () => {
             </div>
             <div className="ml-3">
               <p className="text-xs font-medium text-gray-600">Trend</p>
-              <p className={`text-lg font-bold capitalize ${getTrendColor()}`}>
+              <p className={`text-lg font-semibold capitalize ${getTrendColor()}`}>
                 {getTrendDirection()}
               </p>
             </div>
@@ -321,7 +321,7 @@ const MoodTrends = () => {
               <PieChart>
                 <Pie
                   data={getMoodDistributionData()}
-                  cx="50%"
+                  cx="60%"
                   cy="50%"
                   labelLine={false}
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
