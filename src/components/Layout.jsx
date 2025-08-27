@@ -24,6 +24,7 @@ const Layout = () => {
     { name: 'Journal', href: '/journal', icon: BookOpen, description: 'Write and manage entries' },
     { name: 'Mood Trends', href: '/mood-trends', icon: TrendingUp, description: 'Track your progress' },
     { name: 'Community', href: '/stories', icon: Users, description: 'Share and connect' },
+    { name: 'AI Health', href: '/ai-health', icon: Sparkles, description: 'Your ultimate health assistance' },
     { name: 'Profile', href: '/profile', icon: User, description: 'Account settings' },
   ];
 

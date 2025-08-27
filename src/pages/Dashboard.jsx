@@ -123,6 +123,29 @@ const Dashboard = () => {
     });
   };
 
+  const handleAIMoodAnalysis = async () => {
+    if (!formData.content.trim()) return;
+    
+    try {
+      const response = await api.post('/ai/analyze-mood', {
+        content: formData.content
+      });
+      
+      const suggestedMood = response.data.suggestedMood;
+      const moodOption = moodOptions.find(option => option.value === suggestedMood);
+      
+      setFormData({
+        ...formData,
+        mood: suggestedMood,
+        moodEmoji: moodOption.emoji
+      });
+      
+      toast.success(`AI suggests mood: ${moodOption.label}`);
+    } catch (error) {
+      console.error('AI mood analysis error:', error);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.content.trim()) {
@@ -132,13 +155,33 @@ const Dashboard = () => {
 
     setSaving(true);
     try {
+      // Auto-analyze mood with AI before saving
+      let finalMood = formData.mood;
+      let finalMoodEmoji = formData.moodEmoji;
+      
+      try {
+        const aiResponse = await api.post('/ai/analyze-mood', {
+          content: formData.content
+        });
+        finalMood = aiResponse.data.suggestedMood;
+        const moodOption = moodOptions.find(option => option.value === finalMood);
+        finalMoodEmoji = moodOption.emoji;
+      } catch (error) {
+        console.log('AI mood analysis failed, using manual selection');
+      }
+
       const response = await api.post('/journal/entry', {
         content: formData.content,
-        mood: formData.mood,
-        moodEmoji: formData.moodEmoji
+        mood: finalMood,
+        moodEmoji: finalMoodEmoji
       });
 
       setTodayEntry(response.data.entry);
+      setFormData({
+        ...formData,
+        mood: finalMood,
+        moodEmoji: finalMoodEmoji
+      });
       toast.success(response.data.message);
       
       // Reload recent entries
@@ -299,7 +342,7 @@ const Dashboard = () => {
               {/* Journal Content */}
               <div>
                 <label htmlFor="content" className="block text-sm lg:text-base font-semibold text-gray-900 mb-3">
-                  What's on your mind?
+                  What's on your mind? <span className="text-purple-600 text-xs">(AI will auto-detect mood)</span>
                 </label>
                 <textarea
                   id="content"
@@ -378,6 +421,19 @@ const Dashboard = () => {
                 <div className="ml-2.5 lg:ml-3">
                   <div className="font-semibold text-gray-900 text-sm">Community</div>
                   <div className="text-xs text-gray-500">Read and share stories</div>
+                </div>
+              </button>
+              
+              <button
+                onClick={() => navigate('/ai-health')}
+                className="w-full flex items-center p-3 text-left rounded-lg border border-gray-200 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:border-indigo-300 transition-all duration-200 group transform hover:scale-[1.02]"
+              >
+                <div className="p-1.5 lg:p-2 bg-indigo-100 rounded-lg group-hover:bg-indigo-200 transition-colors">
+                  <Sparkles className="h-4 w-4 lg:h-5 lg:w-5 text-indigo-600" />
+                </div>
+                <div className="ml-2.5 lg:ml-3">
+                  <div className="font-semibold text-gray-900 text-sm">AI Health Journalist</div>
+                  <div className="text-xs text-gray-500">Your ultimate health assistance</div>
                 </div>
               </button>
             </div>

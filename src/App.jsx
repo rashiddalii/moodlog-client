@@ -10,6 +10,7 @@ import Stories from './pages/Stories';
 import NewStory from './pages/NewStory';
 import StoryDetail from './pages/StoryDetail';
 import Profile from './pages/Profile';
+import AIHealth from './pages/AIHealth';
 import Layout from './components/Layout';
 import './App.css';
 
@@ -61,6 +62,7 @@ function App() {
               <Route path="stories" element={<Stories />} />
               <Route path="stories/new" element={<NewStory />} />
               <Route path="stories/:id" element={<StoryDetail />} />
+              <Route path="ai-health" element={<AIHealth />} />
               <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>

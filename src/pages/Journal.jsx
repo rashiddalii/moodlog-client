@@ -80,6 +80,8 @@ const Journal = () => {
     });
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.content.trim()) {
@@ -89,13 +91,33 @@ const Journal = () => {
 
     setSaving(true);
     try {
+      // Auto-analyze mood with AI before saving
+      let finalMood = formData.mood;
+      let finalMoodEmoji = formData.moodEmoji;
+      
+      try {
+        const aiResponse = await api.post('/ai/analyze-mood', {
+          content: formData.content
+        });
+        finalMood = aiResponse.data.suggestedMood;
+        const moodOption = moodOptions.find(option => option.value === finalMood);
+        finalMoodEmoji = moodOption.emoji;
+      } catch (error) {
+        console.log('AI mood analysis failed, using manual selection');
+      }
+
       const response = await api.post('/journal/entry', {
         content: formData.content,
-        mood: formData.mood,
-        moodEmoji: formData.moodEmoji
+        mood: finalMood,
+        moodEmoji: finalMoodEmoji
       });
 
       setEntry(response.data.entry);
+      setFormData({
+        ...formData,
+        mood: finalMood,
+        moodEmoji: finalMoodEmoji
+      });
       setIsEditing(false);
       toast.success(response.data.message);
     } catch (error) {
@@ -346,7 +368,7 @@ const Journal = () => {
               {/* Journal Content */}
               <div>
                 <label htmlFor="content" className="block text-xs font-medium text-gray-700 mb-2">
-                  What's on your mind?
+                  What's on your mind? <span className="text-purple-600">(AI will auto-detect mood)</span>
                 </label>
                 <textarea
                   id="content"
